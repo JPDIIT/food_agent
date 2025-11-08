@@ -13,8 +13,8 @@ Security Features:
 
 Example:
     >>> import pandas as pd
-    >>> executor = SafeCodeExecutor({"sales": pd.DataFrame({"amount": [100, 200]})})
-    >>> success, output, result = executor.execute("print(sales['amount'].mean())")
+    >>> executor = SafeCodeExecutor({"foods": pd.DataFrame({"calcium": [100, 200]})})
+    >>> success, output, result = executor.execute("print(foods['calcium'].mean())")
     >>> print(output)
     150.0
 """

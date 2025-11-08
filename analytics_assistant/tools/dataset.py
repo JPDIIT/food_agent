@@ -51,7 +51,7 @@ class LoadCSVTool(BaseTool):
                 },
                 "alias": {
                     "type": "string",
-                    "description": "Short, memorable name to reference this dataset (e.g., 'sales', 'customers')"
+                    "description": "Short, memorable name to reference this dataset (e.g., 'foods', 'daily value')"
                 }
             },
             "required": ["file_path", "alias"]
