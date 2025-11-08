@@ -9,6 +9,7 @@ dependencies = [
     "python-dotenv",
     "openai",
     "rich[typing]",
+    "matplotlib",
 ]
 
 [build-system]
