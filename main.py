@@ -16,8 +16,8 @@ from rich.prompt import Prompt, Confirm
 
 from openai import OpenAI
 
-#from analytics_assistant.agent import DataAnalyticsAgent
-#from analytics_assistant.cli import DataAnalyticsCLI
+from analytics_assistant.agent import DataAnalyticsAgent
+from analytics_assistant.cli import DataAnalyticsCLI
 
 console = Console()
 
@@ -45,9 +45,11 @@ def run_full_demo():
     console.print("[yellow]Full demo not implemented yet[/yellow]")
     sys.exit(1)
 
-def run_interactive(provider: str):
-    console.print("[yellow]Interactive mode not implemented yet[/yellow]")
-    sys.exit(1)
+def run_interactive(provider: str = "openai"):
+    """Run interactive CLI mode."""
+
+    cli = DataAnalyticsCLI(llm_provider=provider)
+    cli.run()
 
 def main():
     """Main entry point."""
