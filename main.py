@@ -56,6 +56,14 @@ def check_data_files() -> bool:
 
     return True
 
+def print_demo_header(title: str, description: str):
+    """Print a formatted demo section header."""
+    console.print("\n")
+    console.print(Panel(
+        Markdown(f"# {title}\n\n{description}"),
+        border_style="bold cyan"
+    ))
+
 def run_query_with_feedback(agent: DataAnalyticsAgent, query: str, show_code: bool = False):
     """
     Run a query and display results with nice formatting.
