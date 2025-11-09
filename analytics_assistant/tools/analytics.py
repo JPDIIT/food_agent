@@ -65,7 +65,7 @@ class AnalyzeTool(BaseTool):
         Initialize the AnalyzeTool.
 
         Args:
-            llm_client: OpenAI or Anthropic client for LLM API calls
+            llm_client: OpenAI client for LLM API calls
             executor: SafeCodeExecutor instance for safe code execution
         """
         self.llm_client = llm_client
@@ -311,7 +311,7 @@ class AnalyzeTool(BaseTool):
         """
         Call LLM API to generate code.
 
-        Supports both OpenAI and Anthropic clients with automatic detection.
+        Supports OpenAI clients with automatic detection.
         Uses temperature=0 for deterministic code generation.
 
         Args:
@@ -344,25 +344,9 @@ class AnalyzeTool(BaseTool):
                 )
                 return response.choices[0].message.content
 
-            # Check if client is Anthropic
-            elif hasattr(self.llm_client, 'messages'):
-                logger.info("Using Anthropic client")
-                response = self.llm_client.messages.create(
-                    model="claude-3-5-sonnet-20241022",
-                    max_tokens=2000,
-                    temperature=0,  # Deterministic for code generation
-                    messages=[
-                        {
-                            "role": "user",
-                            "content": prompt
-                        }
-                    ]
-                )
-                return response.content[0].text
-
             else:
                 raise RuntimeError(
-                    "Unsupported LLM client. Expected OpenAI or Anthropic client."
+                    "Unsupported LLM client. Expected OpenAI client."
                 )
 
         except Exception as e:
@@ -402,7 +386,7 @@ class VisualizeTool(BaseTool):
         Initialize the VisualizeTool.
 
         Args:
-            llm_client: OpenAI or Anthropic client for LLM API calls
+            llm_client: OpenAI client for LLM API calls
             executor: SafeCodeExecutor instance for safe code execution
         """
         self.llm_client = llm_client
@@ -720,7 +704,7 @@ class VisualizeTool(BaseTool):
         """
         Call LLM API to generate visualization code.
 
-        Supports both OpenAI and Anthropic clients with automatic detection.
+        Supports OpenAI client with automatic detection.
         Uses temperature=0 for deterministic code generation.
 
         Args:
@@ -752,25 +736,9 @@ class VisualizeTool(BaseTool):
                 )
                 return response.choices[0].message.content
 
-            # Check if client is Anthropic
-            elif hasattr(self.llm_client, 'messages'):
-                logger.info("Using Anthropic client for visualization")
-                response = self.llm_client.messages.create(
-                    model="claude-3-5-sonnet-20241022",
-                    max_tokens=2000,
-                    temperature=0,  # Deterministic for code generation
-                    messages=[
-                        {
-                            "role": "user",
-                            "content": prompt
-                        }
-                    ]
-                )
-                return response.content[0].text
-
             else:
                 raise RuntimeError(
-                    "Unsupported LLM client. Expected OpenAI or Anthropic client."
+                    "Unsupported LLM client. Expected OpenAI client."
                 )
 
         except Exception as e:
