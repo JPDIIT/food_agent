@@ -116,14 +116,16 @@ Ask questions about your CSV data in natural language!
 - `/exit` - Exit the CLI
 
 **Example Queries:**
-- "What columns are in the foods data?"
 - "Show me the top 5 foods by calories"
 - "Create a bar chart of foods with higher than average sodium"
 - "Calculate average amounts of each nutrient"
+- "Find foods that are low in cholesterol"
+- "Find foods that are high in vitamin C"
+- "Find foods with around 50mg of calcium"
 
 **Tips:**
 - Start by loading a dataset with `/load`
-- Ask natural language questions about your data
+- Ask natural language questions about the data
 - Request visualizations and charts
 - Use specific column names for better results
 """
