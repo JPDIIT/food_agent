@@ -40,6 +40,48 @@ def setup_llm_client(provider: str = "openai") -> tuple:
         console.print(f"[red]Unknown provider: {provider}[/red]")
         sys.exit(1)
 
+def run_query_with_feedback(agent: DataAnalyticsAgent, query: str, show_code: bool = False):
+    """
+    Run a query and display results with nice formatting.
+
+    Args:
+        agent: DataAnalyticsAgent instance
+        query: Natural language query
+        show_code: Whether to display generated code
+    """
+    console.print(f"\n[bold cyan]Query:[/bold cyan] {query}")
+
+    with console.status("[bold green]Processing...", spinner="dots"):
+        result = agent.run(query)
+
+    if result["status"] == "success":
+        # Show answer
+        console.print(Panel(
+            Markdown(result["answer"]),
+            title="[green]Answer[/green]",
+            border_style="green"
+        ))
+
+        # Show code if requested
+        if show_code and result.get("conversation_history"):
+            for turn in result["conversation_history"]:
+                if "generated_code" in turn.get("result", {}):
+                    from rich.syntax import Syntax
+                    code = turn["result"]["generated_code"]
+                    console.print("\n[bold]Generated Code:[/bold]")
+                    console.print(Syntax(code, "python", theme="monokai", line_numbers=True))
+
+        # Show iterations
+        console.print(f"[dim]Completed in {result.get('iterations', 0)} iterations[/dim]")
+
+        return True
+    else:
+        console.print(Panel(
+            f"[red]{result['error_message']}[/red]",
+            title="[red]Error[/red]",
+            border_style="red"
+        ))
+        return False
 
 def run_full_demo():
     console.print("[yellow]Full demo not implemented yet[/yellow]")
