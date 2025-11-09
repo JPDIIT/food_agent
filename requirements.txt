@@ -6,3 +6,4 @@ rich
 matplotlib
 RestrictedPython
 seaborn
+prompt-toolkit>=3.0.0

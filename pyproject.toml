@@ -12,6 +12,7 @@ dependencies = [
     "matplotlib",
     "RestrictedPython",
     "seaborn",
+    prompt-toolkit>=3.0.0",
 ]
 
 [build-system]
