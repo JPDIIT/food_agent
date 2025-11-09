@@ -119,6 +119,7 @@ Ask questions about your CSV data in natural language!
 - "Show me the top 5 foods by calories"
 - "Create a bar chart of foods with higher than average sodium"
 - "Calculate average amounts of each nutrient"
+- "Get the percent daily value of nutrients in a food"
 - "Find foods that are low in cholesterol"
 - "Find foods that are high in vitamin C"
 - "Find foods with around 50mg of calcium"
