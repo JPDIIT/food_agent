@@ -17,6 +17,11 @@ from .analytics import (
     AnalyzeTool,
     VisualizeTool
 )
+from .deterministic import (
+    HighInTool,
+    LowInTool,
+    TargetTool,
+)
 
 __all__ = [
     "BaseTool",
@@ -25,6 +30,9 @@ __all__ = [
     "InspectDatasetTool",
     "AnalyzeTool",
     "VisualizeTool",
+    "HighInTool",
+    "LowInTool",
+    "TargetTool",
     "clear_datasets",
     "get_dataset"
 ]

@@ -25,6 +25,7 @@ import logging
 from .tools.base import BaseTool
 from .tools.dataset import LoadCSVTool, ListDatasetsTool, InspectDatasetTool
 from .tools.analytics import AnalyzeTool, VisualizeTool
+from .tools.deterministic import HighInTool, LowInTool, TargetTool
 from .executor import SafeCodeExecutor
 from .memory import ConversationMemory
 from .prompts import build_agent_prompt
@@ -87,6 +88,9 @@ class DataAnalyticsAgent:
             "load_csv": LoadCSVTool(),
             "list_datasets": ListDatasetsTool(),
             "inspect_dataset": InspectDatasetTool(),
+            "high_in": HighInTool(),
+            "low_in": LowInTool(),
+            "target": TargetTool(),
             "analyze": AnalyzeTool(llm_client, self.executor),
             "visualize": VisualizeTool(llm_client, self.executor)
         }
