@@ -40,6 +40,22 @@ def setup_llm_client(provider: str = "openai") -> tuple:
         console.print(f"[red]Unknown provider: {provider}[/red]")
         sys.exit(1)
 
+def check_data_files() -> bool:
+    """Check if demo data files exist."""
+    data_dir = Path(__file__).parent / "data"
+    foods_file = data_dir / "foods3.csv"
+    daily_values_file = data_dir / "daily_values.csv"
+
+    if not foods_file.exists() or not daily_values_file.exists():
+        console.print("[red]Error: Demo data files not found![/red]")
+        console.print(f"Expected files:")
+        console.print(f"  - {foods_file}")
+        console.print(f"  - {daily_values_file}")
+        console.print("\nGenerate them with: python generate_demo_data.py")
+        return False
+
+    return True
+
 def run_query_with_feedback(agent: DataAnalyticsAgent, query: str, show_code: bool = False):
     """
     Run a query and display results with nice formatting.
