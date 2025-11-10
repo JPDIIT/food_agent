@@ -169,11 +169,11 @@ def run_full_demo():
     # Scenario 3: Simple analysis
     print_demo_header(
         "Step 3: Analysis",
-        "Find the top foods by amount of vitamin C"
+        "Find the top foods by amount of calories"
     )
     run_query_with_feedback(
         agent,
-        "What are the top 5 foods by amount of vitamin C?",
+        "What are the top 5 foods by amount of calories?",
         show_code=True
     )
 
