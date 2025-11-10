@@ -122,7 +122,7 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="Workshop 07 Data Analytics Agent Demo",
+        description="Food and Nutrition Data Analytics Agent Demo",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
