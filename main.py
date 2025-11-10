@@ -108,8 +108,102 @@ def run_query_with_feedback(agent: DataAnalyticsAgent, query: str, show_code: bo
         return False
 
 def run_full_demo():
-    console.print("[yellow]Full demo not implemented yet[/yellow]")
-    sys.exit(1)
+    """Run a quick 5-minute demo."""
+    console.print(Panel(
+        Markdown("""
+        # Quick Demo (5 minutes)
+
+        This demo showcases:
+        1. Loading datasets
+        2. Quick data exploration
+        3. Simple analysis
+        4. Complex analysis
+        5. Visualization
+        """),
+        title="[bold green]Quick Demo[/bold green]",
+        border_style="green"
+    ))
+
+    # Setup
+    provider_name, llm_client = setup_llm_client()
+    console.print(f"[green]Using {provider_name}[/green]\n")
+
+    if not check_data_files():
+        return
+
+    agent = DataAnalyticsAgent(llm_client=llm_client, verbose=False)
+
+    data_dir = Path(__file__).parent / "data"
+
+    # Scenario 1: Load data
+    print_demo_header(
+        "Step 1: Loading Data",
+        "Load the food data"
+    )
+    run_query_with_feedback(
+        agent,
+        f"Load the CSV file at '{data_dir / 'foods3.csv'}' with alias 'foods'"
+    )
+
+    time.sleep(1)
+
+    run_query_with_feedback(
+        agent,
+        f"Load the CSV file at '{data_dir / 'daily_values.csv'}' with alias 'daily_values'"
+    )
+
+    time.sleep(1)
+
+    # Scenario 2: Quick exploration
+    print_demo_header(
+        "Step 2: Data Exploration",
+        "Understand what's in the dataset"
+    )
+    run_query_with_feedback(
+        agent,
+        "What columns are in the foods data? Show me a few sample rows."
+    )
+
+    time.sleep(1)
+
+    # Scenario 3: Simple analysis
+    print_demo_header(
+        "Step 3: Analysis",
+        "Find the top foods by amount of vitamin C"
+    )
+    run_query_with_feedback(
+        agent,
+        "What are the top 5 foods by amount of vitamin C?",
+        show_code=True
+    )
+
+    time.sleep(1)
+
+    # Scenario 4: Complex analysis
+    print_demo_header(
+        "Step 4: Analysis",
+        "Show the Carbohydrates in Asparagus as a percent of daily value."
+    )
+    run_query_with_feedback(
+        agent,
+        "Calculate the percent daily value of Carbohydrates in Asparagus.",
+        show_code=True
+    )
+
+    time.sleep(1)
+
+    # Scenario 5: Visualization
+    print_demo_header(
+        "Step 5: Visualization",
+        "Create a visualization"
+    )
+    result = agent.run("Compare cholesterol levels between beef, chicken and fish on a bar chart")
+    if result["status"] == "success":
+        console.print("[green]Visualization created successfully![/green]")
+        if result.get("visualizations"):
+            console.print(f"[green]Generated {len(result['visualizations'])} chart(s)[/green]")
+
+    console.print("\n[bold green]Quick demo complete![/bold green]")
 
 def run_interactive(provider: str = "openai"):
     """Run interactive CLI mode."""
@@ -127,9 +221,7 @@ def main():
         epilog="""
 Examples:
   python demo.py                    # Interactive mode
-  python demo.py --scenario quick   # Quick 5-minute demo
-  python demo.py --scenario full    # Full 15-minute demo
-  python demo.py --provider anthropic --scenario quick
+  python demo.py --scenario demo   # Quick 5-minute demo
         """
     )
 
