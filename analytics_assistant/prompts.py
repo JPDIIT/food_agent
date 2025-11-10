@@ -404,6 +404,53 @@ Dataset: foods with columns [fdc_id, description, calories, calcium, fat, protei
 result = foods.groupby('description')['calories'].sum().sort_values(ascending=False).head(5).round(2)
 ```
 
+Example 6: High-in nutrient analysis
+Query: "Find foods that are high in protein and fiber (above 2 std deviations)"
+Dataset: foods with columns [fdc_id, description, calories, protein, fiber]
+
+```python
+# Calculate z-scores for both nutrients
+protein_z = (foods['protein'] - foods['protein'].mean()) / foods['protein'].std()
+fiber_z = (foods['fiber'] - foods['fiber'].mean()) / foods['fiber'].std()
+
+# Find foods high in both nutrients (z > 2)
+high_both = foods[(protein_z > 2) & (fiber_z > 2)].copy()
+
+# Prepare readable result with values
+result = high_both[['description', 'protein', 'fiber']].sort_values(['protein', 'fiber'], ascending=False)
+```
+
+Example 7: Low-in nutrient analysis
+Query: "Find foods that are low in sodium and cholesterol"
+Dataset: foods with columns [fdc_id, description, sodium, cholesterol]
+
+```python
+# Calculate z-scores for target nutrients
+z_scores = foods[['sodium', 'cholesterol']].apply(lambda x: (x - x.mean()) / x.std())
+
+# Find foods with low values in both (z < -1)
+low_both = foods[(z_scores['sodium'] < -1) & (z_scores['cholesterol'] < -1)].copy()
+
+# Sort by combined z-score (most negative = lowest)
+low_both['combined_z'] = z_scores.loc[low_both.index].mean(axis=1)
+result = low_both[['description', 'sodium', 'cholesterol']].sort_values('combined_z')
+```
+
+Example 8: Target nutrient analysis
+Query: "Find foods with protein close to 20g (±2g tolerance)"
+Dataset: foods with columns [fdc_id, description, protein]
+
+```python
+# Find foods within tolerance of target
+target = 20
+tolerance = 2
+matches = foods[foods['protein'].between(target - tolerance, target + tolerance)].copy()
+
+# Rank by closeness to target
+matches['diff_from_target'] = (matches['protein'] - target).abs()
+result = matches[['description', 'protein']].sort_values('diff_from_target')
+```
+
 ## Now Generate Code
 
 Generate pandas code for the query above. Remember:
