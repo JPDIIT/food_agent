@@ -393,7 +393,6 @@ Datasets:
 ```python
 melted_foods = foods.melt(id_vars='description', var_name='nutrient', value_name='value')
 merged = melted_foods.merge(daily_values, on='nutrient', how='left')
-
 ```
 
 Example 5: Top N analysis
