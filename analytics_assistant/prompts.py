@@ -454,30 +454,73 @@ result = low_foods[['description'] + nutrients].sort_values('avg_z')
 
 Example 8: Target nutrient analysis
 Query: "Find foods with protein close to 20g and fiber close to 5g (±10% tolerance)"
-Dataset: foods with columns [fdc_id, description, protein, fiber]
+Dataset: foods with columns [fdc_id, description, Protein, Fiber]
 
 ```python
-# Set target values and calculate tolerances
-targets = {'protein': 20, 'fiber': 5}
-tolerances = {k: v * 0.1 for k, v in targets.items()}  # 10% tolerance
+# Set target values and calculate tolerances (note: exact column names with capitalization)
+targets = {'Protein': 20, 'Fiber': 5}  # Use exact column names from dataset
+tolerances = {k: v * 0.25 for k, v in targets.items()}  # 10% tolerance for realistic matching
 
 # Find foods within tolerance for all nutrients
 matches = foods.copy()
+mask = pd.Series(True, index=matches.index)
+
+# Apply filters for each nutrient
 for nutrient, target in targets.items():
     tolerance = tolerances[nutrient]
-    within_range = foods[nutrient].between(target - tolerance, target + tolerance)
-    matches = matches[within_range]
+    within_range = matches[nutrient].between(target - tolerance, target + tolerance)
+    mask &= within_range
+
+matches = matches[mask]
 
 # Calculate percentage difference from targets
 for nutrient, target in targets.items():
     matches[f'{nutrient}_pct_diff'] = ((matches[nutrient] - target) / target * 100).abs()
 
 # Calculate average percentage difference for sorting
-matches['avg_pct_diff'] = matches[[f'{nutrient}_pct_diff' for nutrient in targets]].mean(axis=1)
+pct_diff_cols = [f'{nutrient}_pct_diff' for nutrient in targets]
+matches['avg_pct_diff'] = matches[pct_diff_cols].mean(axis=1)
 
-# Sort by average percentage difference (closest to target first)
-result = matches[['description'] + list(targets.keys())].sort_values('avg_pct_diff')
+# Sort by average percentage difference and prepare result
+matches = matches.sort_values('avg_pct_diff')
+result = matches[['description'] + list(targets.keys())]
 ```
+
+Example 9: Using target tool with tolerance loop
+User: "Find foods with protein close to 20g and fiber close to 5g"
+
+Turn 1 - Initialize search strategy:
+{
+  "thought": "This is a DETERMINISTIC query for target nutrients. I'll implement a search strategy that increases tolerance from 5% to 25% in 5% increments until matches are found.",
+  "action": "target",
+  "parameters": {
+    "alias": "foods",
+    "nutrients": ["Protein", "Fiber"],
+    "amount": {"Protein": 20, "Fiber": 5},
+    "tol": 1.0  # Starting with 5% tolerance
+  }
+}
+
+After no matches, continue loop in Turn 2-5:
+{
+  "thought": "No matches at current tolerance of X%. Following my search strategy: tolerance = min(current + 5%, max_tolerance of 25%)",
+  "action": "target",
+  "parameters": {
+    "alias": "foods",
+    "nutrients": ["Protein", "Fiber"],
+    "amount": {"Protein": 20, "Fiber": 5},
+    "tol": "<next_tolerance>"  # Increases by 5% each iteration
+  }
+}
+
+After finding matches (or reaching max tolerance), Final Turn:
+{
+  "thought": "Search complete. Either found matches at X% tolerance or reached maximum 25% tolerance.",
+  "action": "DONE",
+  "parameters": {
+    "answer": "Search results using adaptive tolerance (5%-25%):\n\nFound matches at X% tolerance:\n1. Peanut butter, smooth style, with salt\n   - Protein: 22.5g (target: 20g ±X%)\n   - Fiber: 4.8g (target: 5g ±X%)\n\n2. Other matches...\n\nNote: Started at 5% tolerance and increased by 5% each step until matches were found (or reached maximum 25%)."
+  }
+}
 
 ## Now Generate Code
 
