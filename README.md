@@ -53,8 +53,8 @@ The CLI supports natural language queries and special commands:
 ```
 > /load data/foods3.csv foods
 > What are the top 5 foods by calories?
-> Show me a bar chart of revenue by category
-> Which regions have the highest sales?
+> Show me a bar chart of foods that are high in vitamin D
+> Show me foods that have close to 60mg of calcium and 7g of fiber
 ```
 
 ### Demo Datasets
