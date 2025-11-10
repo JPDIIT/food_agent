@@ -405,50 +405,78 @@ result = foods.groupby('description')['calories'].sum().sort_values(ascending=Fa
 ```
 
 Example 6: High-in nutrient analysis
-Query: "Find foods that are high in protein and fiber (above 2 std deviations)"
+Query: "Find foods that are high in protein and fiber (above mean + 1.5 std)"
 Dataset: foods with columns [fdc_id, description, calories, protein, fiber]
 
 ```python
-# Calculate z-scores for both nutrients
-protein_z = (foods['protein'] - foods['protein'].mean()) / foods['protein'].std()
-fiber_z = (foods['fiber'] - foods['fiber'].mean()) / foods['fiber'].std()
+# Calculate z-scores for target nutrients
+nutrients = ['protein', 'fiber']
+z_scores = foods[nutrients].apply(lambda x: (x - x.mean()) / x.std())
 
-# Find foods high in both nutrients (z > 2)
-high_both = foods[(protein_z > 2) & (fiber_z > 2)].copy()
+# Find foods with high values (z > 1.5)
+is_high = (z_scores > 1.5)
+high_foods = foods[is_high.all(axis=1)].copy()
 
-# Prepare readable result with values
-result = high_both[['description', 'protein', 'fiber']].sort_values(['protein', 'fiber'], ascending=False)
+# Add z-scores for ranking
+for nutrient in nutrients:
+    high_foods[f'{nutrient}_z'] = z_scores.loc[high_foods.index, nutrient]
+
+# Calculate average z-score for sorting
+high_foods['avg_z'] = z_scores.loc[high_foods.index].mean(axis=1)
+
+# Sort by average z-score (highest first)
+result = high_foods[['description'] + nutrients].sort_values('avg_z', ascending=False)
 ```
 
 Example 7: Low-in nutrient analysis
-Query: "Find foods that are low in sodium and cholesterol"
+Query: "Find foods that are low in sodium and cholesterol (below mean - 1 std)"
 Dataset: foods with columns [fdc_id, description, sodium, cholesterol]
 
 ```python
 # Calculate z-scores for target nutrients
-z_scores = foods[['sodium', 'cholesterol']].apply(lambda x: (x - x.mean()) / x.std())
+nutrients = ['sodium', 'cholesterol']
+z_scores = foods[nutrients].apply(lambda x: (x - x.mean()) / x.std())
 
-# Find foods with low values in both (z < -1)
-low_both = foods[(z_scores['sodium'] < -1) & (z_scores['cholesterol'] < -1)].copy()
+# Find foods with low values (z < -1)
+is_low = (z_scores < -1)
+low_foods = foods[is_low.all(axis=1)].copy()
 
-# Sort by combined z-score (most negative = lowest)
-low_both['combined_z'] = z_scores.loc[low_both.index].mean(axis=1)
-result = low_both[['description', 'sodium', 'cholesterol']].sort_values('combined_z')
+# Add z-scores for ranking
+for nutrient in nutrients:
+    low_foods[f'{nutrient}_z'] = z_scores.loc[low_foods.index, nutrient]
+
+# Calculate average z-score for sorting (most negative = lowest)
+low_foods['avg_z'] = z_scores.loc[low_foods.index].mean(axis=1)
+
+# Sort by average z-score (most negative first)
+result = low_foods[['description'] + nutrients].sort_values('avg_z')
 ```
 
 Example 8: Target nutrient analysis
-Query: "Find foods with protein close to 20g (±2g tolerance)"
-Dataset: foods with columns [fdc_id, description, protein]
+Query: "Find foods with protein close to 20g and fiber close to 5g (±10% tolerance)"
+Dataset: foods with columns [fdc_id, description, protein, fiber]
 
 ```python
-# Find foods within tolerance of target
-target = 20
-tolerance = 2
-matches = foods[foods['protein'].between(target - tolerance, target + tolerance)].copy()
+# Set target values and calculate tolerances
+targets = {'protein': 20, 'fiber': 5}
+tolerances = {k: v * 0.1 for k, v in targets.items()}  # 10% tolerance
 
-# Rank by closeness to target
-matches['diff_from_target'] = (matches['protein'] - target).abs()
-result = matches[['description', 'protein']].sort_values('diff_from_target')
+# Find foods within tolerance for all nutrients
+matches = foods.copy()
+for nutrient, target in targets.items():
+    tolerance = tolerances[nutrient]
+    within_range = foods[nutrient].between(target - tolerance, target + tolerance)
+    matches = matches[within_range]
+
+# Calculate percentage difference from targets
+for nutrient, target in targets.items():
+    matches[f'{nutrient}_pct_diff'] = ((matches[nutrient] - target) / target * 100).abs()
+
+# Calculate average percentage difference for sorting
+matches['avg_pct_diff'] = matches[[f'{nutrient}_pct_diff' for nutrient in targets]].mean(axis=1)
+
+# Sort by average percentage difference (closest to target first)
+result = matches[['description'] + list(targets.keys())].sort_values('avg_pct_diff')
 ```
 
 ## Now Generate Code
