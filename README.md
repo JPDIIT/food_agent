@@ -3,6 +3,14 @@
 A ReAct-based AI agent that can query and analyze extensive nutrition data from CSV files through natural language queries. Built with code generation, safe execution, and conversational memory.
 This project is an unoffical fork of this repo: https://github.com/00ber/build-fellowship-ai-assistant and builds off of much of its code. It has been re-worked and expanded to suit the specific nature, requirements and use cases of the food and nutition datasets.
 
+## Datasets
+
+### USDA: FoodData Central (Foundation Foods)
+https://fdc.nal.usda.gov/download-datasets
+
+### FDA: Daily Values for Nutrients
+https://www.fda.gov/food/nutrition-facts-label/daily-value-nutrition-and-supplement-facts-labels
+
 ## Quick Start
 
 ### 1. Setup Environment
