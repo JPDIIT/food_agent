@@ -133,7 +133,8 @@ food_agent/
 │
 ├── data/                     # Food and nutrition datasets
 │   ├── foods.csv             # List of foods with nutrients
-│   ├── daily_values.py       # List of recommended daily values
+│   ├── daily_values.csv      # List of recommended daily values
+│   └── food_portions.csv     # List of serving portion sizes for foods
 ├── outputs/                  # Generated visualizations
 ├── main.py                   # Main entry point for the application
 └── README.md                 # This file
